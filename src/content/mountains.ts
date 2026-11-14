@@ -3,7 +3,7 @@ export type Lang = 'it' | 'en' | 'uk';
 export type Text = Record<Lang, string>;
 export type FileId = 'ama-dablam' | 'manaslu' | 'everest' | 'k2';
 
-export interface Camp { name: Text; height: number; day: number; note: Text }
+export interface Camp { name: Text; height: number; day: number; note: Text; /** a real picture of the place, see tools/photos.mjs */ photo?: string }
 export interface Mountain {
   id: FileId;
   no: string;
@@ -70,7 +70,7 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     season: T('Ottobre–novembre', 'October–November', 'Жовтень–листопад'),
     weeks: 4, group: 8, priceFrom: 9800,
     camps: [
-      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 4600, day: 1, note: T('Prati sopra Pangboche. Acclimatamento e scuola di corda.', 'Meadows above Pangboche. Acclimatisation and rope practice.', 'Луки над Пангбоче. Акліматизація та тренування з мотузками.') },
+      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 4600, day: 1, note: T('Prati sopra Pangboche. Acclimatamento e scuola di corda.', 'Meadows above Pangboche. Acclimatisation and rope practice.', 'Луки над Пангбоче. Акліматизація та тренування з мотузками.'), photo: 'ama-bc' },
       { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 5800, day: 6, note: T('Tende tra i massi della cresta. Da qui comincia l’arrampicata.', 'Tents among the boulders on the ridge. The climbing starts here.', 'Намети між брилами на гребені. Звідси починається лазіння.') },
       { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6000, day: 10, note: T('Sopra la Torre Gialla, il passo più tecnico. Piazzole minuscole e vuoto ovunque.', 'Above the Yellow Tower, the most technical pitch. Tiny ledges, air everywhere.', 'Над Жовтою вежею, найтехнічнішою ділянкою. Крихітні полички, всюди прірва.') },
       { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 6300, day: 14, note: T('Una cengia sotto il seracco del Dablam. Si parte di notte.', 'A ledge below the Dablam serac. You leave at night.', 'Полиця під сераком Даблам. Виходиш уночі.') },
@@ -107,10 +107,10 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     season: T('Settembre–ottobre', 'September–October', 'Вересень–жовтень'),
     weeks: 6, group: 8, priceFrom: 24500,
     camps: [
-      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 4800, day: 1, note: T('Sopra Samagaon, su una morena con vista sul ghiacciaio.', 'Above Samagaon, on a moraine facing the glacier.', 'Над Самагаоном, на морені навпроти льодовика.') },
+      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 4800, day: 1, note: T('Sopra Samagaon, su una morena con vista sul ghiacciaio.', 'Above Samagaon, on a moraine facing the glacier.', 'Над Самагаоном, на морені навпроти льодовика.'), photo: 'manaslu-bc' },
       { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 5700, day: 7, note: T('Sul ghiacciaio, dopo il primo labirinto di crepacci.', 'On the glacier, past the first maze of crevasses.', 'На льодовику, після першого лабіринту тріщин.') },
-      { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6400, day: 14, note: T('Sopra la seraccata. Qui il corpo impara la quota.', 'Above the icefall. This is where your body learns the height.', 'Над льодопадом. Тут тіло вчиться висоті.') },
-      { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 6800, day: 22, note: T('Sotto il pendio più lungo. Vento, sempre.', 'Below the longest slope. Wind, always.', 'Під найдовшим схилом. Вітер, завжди.') },
+      { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6400, day: 14, note: T('Sopra la seraccata. Qui il corpo impara la quota.', 'Above the icefall. This is where your body learns the height.', 'Над льодопадом. Тут тіло вчиться висоті.'), photo: 'manaslu-c2' },
+      { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 6800, day: 22, note: T('Sotto il pendio più lungo. Vento, sempre.', 'Below the longest slope. Wind, always.', 'Під найдовшим схилом. Вітер, завжди.'), photo: 'manaslu-c3' },
       { name: T('Campo 4', 'Camp 4', 'Табір 4'), height: 7400, day: 30, note: T('Sull’altopiano. Ossigeno da qui in su.', 'On the plateau. Oxygen from here up.', 'На плато. Звідси вище — з киснем.') },
       { name: T('Vetta vera', 'True summit', 'Справжня вершина'), height: 8163, day: 31, note: T('Una cresta affilata oltre l’anticima. È lì che si conta.', 'A knife-edge past the fore-summit. That is the one that counts.', 'Гострий гребінь за передвершиною. Рахується саме вона.') },
     ],
@@ -146,12 +146,12 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     season: T('Aprile–maggio', 'April–May', 'Квітень–травень'),
     weeks: 9, group: 8, priceFrom: 58000,
     camps: [
-      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 5364, day: 1, note: T('Sul ghiacciaio del Khumbu. Per sei settimane sarà casa.', 'On the Khumbu Glacier. Home for six weeks.', 'На льодовику Кхумбу. Дім на шість тижнів.') },
-      { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 6065, day: 12, note: T('Oltre la seraccata del Khumbu, all’ingresso della Valle del Silenzio.', 'Past the Khumbu Icefall, at the mouth of the Western Cwm.', 'За льодопадом Кхумбу, на вході в Західний цирк.') },
-      { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6400, day: 13, note: T('Il campo avanzato. Di giorno fa caldo come in un forno di neve.', 'Advanced base. By day it is as hot as a snow oven.', 'Передовий табір. Удень спекотно, як у сніговій печі.') },
-      { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 7162, day: 23, note: T('Piazzole scavate nella parete del Lhotse.', 'Platforms cut into the Lhotse Face.', 'Майданчики, вирубані в стіні Лхоцзе.') },
-      { name: T('Colle Sud', 'South Col', 'Південне сідло'), height: 7920, day: 47, note: T('Zona della morte. Si dorme poche ore, si parte a mezzanotte.', 'The death zone. A few hours of sleep, you leave at midnight.', 'Зона смерті. Кілька годин сну, виходиш опівночі.') },
-      { name: T('Vetta', 'Summit', 'Вершина'), height: 8849, day: 48, note: T('Il punto più alto della Terra. Restano dieci minuti e tutta la discesa.', 'The highest point on Earth. Ten minutes, then the whole way down.', 'Найвища точка Землі. Десять хвилин, а потім увесь спуск.') },
+      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 5364, day: 1, note: T('Sul ghiacciaio del Khumbu. Per sei settimane sarà casa.', 'On the Khumbu Glacier. Home for six weeks.', 'На льодовику Кхумбу. Дім на шість тижнів.'), photo: 'everest-bc' },
+      { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 6065, day: 12, note: T('Oltre la seraccata del Khumbu, all’ingresso della Valle del Silenzio.', 'Past the Khumbu Icefall, at the mouth of the Western Cwm.', 'За льодопадом Кхумбу, на вході в Західний цирк.'), photo: 'everest-c1' },
+      { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6400, day: 13, note: T('Il campo avanzato. Di giorno fa caldo come in un forno di neve.', 'Advanced base. By day it is as hot as a snow oven.', 'Передовий табір. Удень спекотно, як у сніговій печі.'), photo: 'everest-c2' },
+      { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 7162, day: 23, note: T('Piazzole scavate nella parete del Lhotse.', 'Platforms cut into the Lhotse Face.', 'Майданчики, вирубані в стіні Лхоцзе.'), photo: 'everest-c3' },
+      { name: T('Colle Sud', 'South Col', 'Південне сідло'), height: 7920, day: 47, note: T('Zona della morte. Si dorme poche ore, si parte a mezzanotte.', 'The death zone. A few hours of sleep, you leave at midnight.', 'Зона смерті. Кілька годин сну, виходиш опівночі.'), photo: 'everest-col' },
+      { name: T('Vetta', 'Summit', 'Вершина'), height: 8849, day: 48, note: T('Il punto più alto della Terra. Restano dieci minuti e tutta la discesa.', 'The highest point on Earth. Ten minutes, then the whole way down.', 'Найвища точка Землі. Десять хвилин, а потім увесь спуск.'), photo: 'everest-top' },
     ],
     requirements: [
       T('Un ottomila già salito, o 7000–8000 m con ottimo allenamento', 'One eight-thousander already, or 7000–8000 m and excellent fitness', 'Уже є один восьмитисячник, або 7000–8000 м і відмінна підготовка'),
@@ -186,13 +186,13 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     season: T('Giugno–agosto', 'June–August', 'Червень–серпень'),
     weeks: 9, group: 6, priceFrom: 62000,
     camps: [
-      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 5000, day: 1, note: T('Sul ghiacciaio Godwin-Austen, dopo più di una settimana di marcia sul Baltoro.', 'On the Godwin-Austen Glacier, after more than a week walking up the Baltoro.', 'На льодовику Годвін-Остен, після понад тижня ходу Балторо.') },
-      { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 6050, day: 8, note: T('Una cresta di roccia esposta ai sassi.', 'A rock rib exposed to falling stones.', 'Скельне ребро під камінепадом.') },
+      { name: T('Campo base', 'Base Camp', 'Базовий табір'), height: 5000, day: 1, note: T('Sul ghiacciaio Godwin-Austen, dopo più di una settimana di marcia sul Baltoro.', 'On the Godwin-Austen Glacier, after more than a week walking up the Baltoro.', 'На льодовику Годвін-Остен, після понад тижня ходу Балторо.'), photo: 'k2-bc' },
+      { name: T('Campo 1', 'Camp 1', 'Табір 1'), height: 6050, day: 8, note: T('Una cresta di roccia esposta ai sassi.', 'A rock rib exposed to falling stones.', 'Скельне ребро під камінепадом.'), photo: 'k2-c1' },
       { name: T('Campo 2', 'Camp 2', 'Табір 2'), height: 6700, day: 15, note: T('Sopra il Camino House, il primo vero esame.', 'Above House’s Chimney, the first real test.', 'Над Камином Гауса, першим справжнім іспитом.') },
       { name: T('Campo 3', 'Camp 3', 'Табір 3'), height: 7300, day: 30, note: T('Oltre la Piramide Nera. Da qui niente è facile.', 'Past the Black Pyramid. Nothing is easy from here.', 'За Чорною пірамідою. Звідси нічого не буває легким.') },
       { name: T('Campo 4', 'Camp 4', 'Табір 4'), height: 7900, day: 44, note: T('La Spalla. Si parte verso il Collo di Bottiglia.', 'The Shoulder. You leave for the Bottleneck.', 'Плече. Виходиш до Пляшкового горла.') },
-      { name: T('Collo di Bottiglia', 'Bottleneck', 'Пляшкове горло'), height: 8200, day: 45, note: T('Un canale sotto un seracco sospeso. Si passa in fretta e in silenzio.', 'A couloir under a hanging serac. You pass fast and in silence.', 'Кулуар під навислим сераком. Проходиш швидко й мовчки.') },
-      { name: T('Vetta', 'Summit', 'Вершина'), height: 8611, day: 45, note: T('Pochissimi sono stati qui. Adesso anche tu.', 'Very few people have stood here. Now you have.', 'Тут стояли дуже небагато людей. Тепер і ти.') },
+      { name: T('Collo di Bottiglia', 'Bottleneck', 'Пляшкове горло'), height: 8200, day: 45, note: T('Un canale sotto un seracco sospeso. Si passa in fretta e in silenzio.', 'A couloir under a hanging serac. You pass fast and in silence.', 'Кулуар під навислим сераком. Проходиш швидко й мовчки.'), photo: 'k2-bottleneck' },
+      { name: T('Vetta', 'Summit', 'Вершина'), height: 8611, day: 45, note: T('Pochissimi sono stati qui. Adesso anche tu.', 'Very few people have stood here. Now you have.', 'Тут стояли дуже небагато людей. Тепер і ти.'), photo: 'k2-top' },
     ],
     requirements: [
       T('Almeno un ottomila salito, meglio con noi', 'At least one eight-thousander, ideally with us', 'Щонайменше один восьмитисячник, найкраще з нами'),

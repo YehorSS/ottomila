@@ -44,6 +44,8 @@ const en = {
   'file.next': 'Next level: {name}',
   'file.scroll': 'Scroll to climb',
 
+  'route.title': 'On the route',
+  'route.lead': 'Not renders. The real places our files lead to.',
   'ladder.title': 'The ladder',
   'ladder.lead': 'Nobody starts on K2. Every level is earned on the one below it.',
 
@@ -161,6 +163,8 @@ const it: Dict = {
   'file.next': 'Livello successivo: {name}',
   'file.scroll': 'Scorri per salire',
 
+  'route.title': 'Sulla via',
+  'route.lead': 'Non sono rendering. I posti veri dove portano le nostre schede.',
   'ladder.title': 'La scala',
   'ladder.lead': 'Nessuno comincia dal K2. Ogni livello si guadagna su quello sotto.',
 
@@ -276,6 +280,8 @@ const uk: Dict = {
   'file.next': 'Наступний рівень: {name}',
   'file.scroll': 'Гортай, щоб підійматися',
 
+  'route.title': 'На маршруті',
+  'route.lead': 'Це не рендери. Справжні місця, куди ведуть наші справи.',
   'ladder.title': 'Драбина',
   'ladder.lead': 'Ніхто не починає з K2. Кожен рівень заробляється на попередньому.',
 

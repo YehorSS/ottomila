@@ -46,6 +46,7 @@ function render(l: Lang) {
       <h3>${esc(c.name[l])}</h3>
       <p class="alt mono">${num(l, c.height)} m · ${esc(t(l, 'file.oxygen', { p: Math.round(oxygenShare(c.height) * 100) }))}</p>
       <p>${esc(c.note[l])}</p>
+      ${c.photo ? `<figure class="camp-photo"><img ${photoSet(c.photo)} sizes="(max-width: 760px) 100vw, 500px" alt="${esc(creditFor(c.photo)?.alt[l] ?? '')}" width="1600" height="1066" loading="lazy"><figcaption class="mono small">${esc(creditFor(c.photo)?.alt[l] ?? '')}</figcaption></figure>` : ''}
     </li>`).join('');
   const next = FILES[FILES.indexOf(id) + 1];
   document.getElementById('details')!.innerHTML = `

@@ -25,6 +25,11 @@ main.innerHTML = `
   <p class="sec-lead" data-t="ladder.lead"></p>
   <ol class="rungs" id="rungs"></ol>
 </section>
+<section class="route" aria-labelledby="route-title">
+  <h2 class="sec-title" id="route-title" data-t="route.title"></h2>
+  <p class="sec-lead" data-t="route.lead"></p>
+  <div class="strip" id="strip"></div>
+</section>
 <section class="clearance" id="clearance" aria-labelledby="clear-title">
   <h2 class="sec-title" id="clear-title" data-t="clear.title"></h2>
   <p class="sec-lead" data-t="clear.lead"></p>
@@ -68,6 +73,14 @@ document.querySelectorAll<HTMLButtonElement>('.tabs [data-file]').forEach(b => b
   void select(b.dataset.file as FileId);
 }));
 
+const STRIP: [string, FileId][] = [['everest-c1', 'everest'], ['everest-col', 'everest'], ['k2-bottleneck', 'k2'], ['k2-top', 'k2'], ['manaslu-c3', 'manaslu']];
+function renderStrip(l: Lang) {
+  document.getElementById('strip')!.innerHTML = STRIP.map(([name, id], i) => `<figure class="${i === 3 ? 'tall' : ''}" data-rise>
+      <a href="${fileUrl(id)}"><img ${photoSet(name)} sizes="(max-width: 760px) 90vw, 40vw" alt="${esc(creditFor(name)?.alt[l] ?? '')}" width="1600" height="1066" loading="lazy"></a>
+      <figcaption><span class="mono">${MOUNTAINS[id].no} · ${esc(MOUNTAINS[id].name[l]).toUpperCase()}</span>${esc(creditFor(name)?.alt[l] ?? '')}</figcaption>
+    </figure>`).join('');
+}
+
 function renderLadder(l: Lang) {
   document.getElementById('rungs')!.innerHTML = FILES.map(id => {
     const m = MOUNTAINS[id], level = ['I', 'II', 'III', 'IV'][m.level - 1];
@@ -85,11 +98,23 @@ function renderLadder(l: Lang) {
 const quiz = mountClearance(document.getElementById('quiz')!, getLang);
 onLang(l => {
   renderLadder(l);
+  renderStrip(l);
   quiz(l);
   document.getElementById('card')!.innerHTML = dossier(MOUNTAINS[current], l, { open: true });
   view.setLabels(pinLabels(current, l));
   rise();
 });
 renderLadder(getLang());
+renderStrip(getLang());
+// drag the strip sideways with a mouse; touch already swipes
+{
+  const strip = document.getElementById('strip')!;
+  let x0 = 0, s0 = 0, moved = false;
+  strip.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; x0 = e.clientX; s0 = strip.scrollLeft; moved = false; strip.setPointerCapture(e.pointerId); strip.classList.add('drag'); });
+  strip.addEventListener('pointermove', e => { if (!strip.hasPointerCapture(e.pointerId)) return; const d = e.clientX - x0; if (Math.abs(d) > 4) moved = true; strip.scrollLeft = s0 - d; });
+  strip.addEventListener('pointerup', e => { strip.releasePointerCapture(e.pointerId); strip.classList.remove('drag'); });
+  // a drag is not a click on the picture
+  strip.addEventListener('click', e => { if (moved) e.preventDefault(); }, true);
+}
 rise();
 await select(current, false);

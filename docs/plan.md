@@ -37,7 +37,7 @@
 ### Task 2: Clearance and oxygen
 **Files:** `src/clearance.ts`, `src/oxygen.ts`, `tests/{clearance,oxygen}.test.ts`
 **Produces:** `oxygenShare(heightM): number` (barometric, sea level 1.0); `clear(answers): Record<FileId, { ok: boolean; reason?: ReasonKey }>` with rules: Ama Dablam needs ≥5000 m and ≥4 weeks; Manaslu needs ≥6000 m (6500 band) and ≥6 weeks and training ≥3 h; Everest needs an 8000er or ≥6500–8000 band with training >6 h, and 9+ weeks; K2 needs an 8000er, 9+ weeks, training >6 h, and is always "by invitation" (ok means "call us").
-- [ ] Tests: 8849 m → 0.32–0.34; every answer combination returns four results; lowest answers → only Ama Dablam? no — lowest denies all with reasons; mid answers → I and II; full → all four, K2 with invitation note. FAIL → implement → PASS → commit.
+- [ ] Tests: 8849 m → 0.32–0.34; every answer combination returns four results; lowest answers deny all four, each with a reason; mid answers clear I and II; full answers clear all four, K2 with the invitation note. FAIL → implement → PASS → commit.
 
 ### Task 3: Terrain bake
 **Files:** `tools/bake.mjs`, `public/terrain/<id>-{768,384}.png` + `<id>.json`, `src/terrain/decode.ts`, `tests/decode.test.ts`

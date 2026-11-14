@@ -82,10 +82,13 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
       if (!el || !c) continue;
       v.set(c.x, c.y, c.z).project(camera);
       const x = ((v.x + 1) / 2) * w, y = ((1 - v.y) / 2) * h;
-      const box: [number, number, number, number] = [x - 6, y - 10, x + 120, y + 26];
+      // near the right edge the label turns to the left of its dot
+      const lw = el.offsetWidth || 120, left = x + lw > w - 8;
+      const box: [number, number, number, number] = left ? [x - lw, y - 10, x + 6, y + 26] : [x - 6, y - 10, x + lw, y + 26];
       const inView = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
       const clash = taken.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
-      el.style.transform = `translate(${x}px, ${y}px)`;
+      el.classList.toggle('left', left);
+      el.style.transform = `translate(${left ? Math.max(4, x - lw) : x}px, ${y}px)`;
       el.classList.toggle('hide', !inView || clash);
       el.classList.toggle('on', i === active);
       if (inView && !clash) taken.push(box);

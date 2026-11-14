@@ -216,6 +216,90 @@
   "page": "https://commons.wikimedia.org/wiki/File:Camp_3_of_Mt._Manslu.jpg"
  },
  {
+  "name": "ama-c2",
+  "alt": {
+   "en": "Camp 2 on Ama Dablam: tents on top of a rock tower",
+   "it": "Il Campo 2 sull’Ama Dablam: tende in cima a una torre di roccia",
+   "uk": "Табір 2 на Ама-Даблам: намети на вершині скельної вежі"
+  },
+  "creator": "Jaccoob23",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Ama_Dablam_camp_2.jpg"
+ },
+ {
+  "name": "ama-top",
+  "alt": {
+   "en": "On the fixed rope during the summit push on Ama Dablam",
+   "it": "Sulla corda fissa durante l’attacco alla vetta dell’Ama Dablam",
+   "uk": "На перилах під час штурму вершини Ама-Даблам"
+  },
+  "creator": "KSszilas",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sunset_on_Ama_Dablam.JPG"
+ },
+ {
+  "name": "manaslu-c4",
+  "alt": {
+   "en": "The summit of Manaslu and the way up, seen from about 7,500 m",
+   "it": "La vetta del Manaslu e la via di salita, vista da circa 7500 m",
+   "uk": "Вершина Манаслу і шлях до неї, видно з приблизно 7500 м"
+  },
+  "creator": "AngeliSherpa",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Summit_of_Mt._Mansalu.jpg"
+ },
+ {
+  "name": "manaslu-top",
+  "alt": {
+   "en": "On the summit ridge of Manaslu, 3 October 2011",
+   "it": "Sulla cresta finale del Manaslu, 3 ottobre 2011",
+   "uk": "На вершинному гребені Манаслу, 3 жовтня 2011"
+  },
+  "creator": "8848hehe",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Herbert_Hellmuth_Summit_on_mt._Manaslu.jpg"
+ },
+ {
+  "name": "k2-c2",
+  "alt": {
+   "en": "Fixed ropes at Camp 2 on the Abruzzi Spur, the Godwin-Austen Glacier below",
+   "it": "Corde fisse al Campo 2 sullo Sperone Abruzzi, sotto il ghiacciaio Godwin-Austen",
+   "uk": "Перила біля табору 2 на ребрі Абруцці, внизу льодовик Годвін-Остен"
+  },
+  "creator": "Adha65",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:K2_-_camp_2.jpg"
+ },
+ {
+  "name": "k2-c3",
+  "alt": {
+   "en": "Sunrise at a high camp on K2, getting ready to climb",
+   "it": "Alba a un campo alto sul K2, prima di ripartire",
+   "uk": "Світанок у високому таборі на K2, збори перед виходом"
+  },
+  "creator": "Adha65",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:K2_-_Camp_3_Sunrise.jpg"
+ },
+ {
+  "name": "k2-c4",
+  "alt": {
+   "en": "On the Shoulder of K2, Broad Peak behind",
+   "it": "Sulla Spalla del K2, dietro il Broad Peak",
+   "uk": "На Плечі K2, позаду Брод-Пік"
+  },
+  "creator": "Adha65",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:K2_-_shoulder.jpg"
+ },
+ {
   "name": "ama-bc",
   "alt": {
    "en": "The trail to Ama Dablam base camp",

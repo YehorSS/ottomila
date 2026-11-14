@@ -24,6 +24,13 @@ const PICK = {
   'manaslu-bc': ['cand:mt-manaslu-from-manaslu-basecamp.jpg', 'Manaslu from base camp', 'Il Manaslu dal campo base', 'Манаслу з базового табору'],
   'manaslu-c2': ['cand:camp-2.jpg', 'Camp 2 on Manaslu, above the clouds', 'Il Campo 2 sul Manaslu, sopra le nuvole', 'Табір 2 на Манаслу, над хмарами'],
   'manaslu-c3': ['cand:camp-3-of-mt-manslu.jpg', 'Camp 3 on Manaslu', 'Il Campo 3 sul Manaslu', 'Табір 3 на Манаслу'],
+  'ama-c2': ['cand:ama-dablam-camp-2.jpg', 'Camp 2 on Ama Dablam: tents on top of a rock tower', 'Il Campo 2 sull’Ama Dablam: tende in cima a una torre di roccia', 'Табір 2 на Ама-Даблам: намети на вершині скельної вежі'],
+  'ama-top': ['cand:sunset-on-ama-dablam.jpg', 'On the fixed rope during the summit push on Ama Dablam', 'Sulla corda fissa durante l’attacco alla vetta dell’Ama Dablam', 'На перилах під час штурму вершини Ама-Даблам'],
+  'manaslu-c4': ['cand:summit-of-mt-mansalu.jpg', 'The summit of Manaslu and the way up, seen from about 7,500 m', 'La vetta del Manaslu e la via di salita, vista da circa 7500 m', 'Вершина Манаслу і шлях до неї, видно з приблизно 7500 м'],
+  'manaslu-top': ['cand:herbert-hellmuth-summit-on-mt-manaslu.jpg', 'On the summit ridge of Manaslu, 3 October 2011', 'Sulla cresta finale del Manaslu, 3 ottobre 2011', 'На вершинному гребені Манаслу, 3 жовтня 2011'],
+  'k2-c2': ['cand:k2-camp-2.jpg', 'Fixed ropes at Camp 2 on the Abruzzi Spur, the Godwin-Austen Glacier below', 'Corde fisse al Campo 2 sullo Sperone Abruzzi, sotto il ghiacciaio Godwin-Austen', 'Перила біля табору 2 на ребрі Абруцці, внизу льодовик Годвін-Остен'],
+  'k2-c3': ['cand:k2-camp-3-sunrise.jpg', 'Sunrise at a high camp on K2, getting ready to climb', 'Alba a un campo alto sul K2, prima di ripartire', 'Світанок у високому таборі на K2, збори перед виходом'],
+  'k2-c4': ['cand:k2-shoulder.jpg', 'On the Shoulder of K2, Broad Peak behind', 'Sulla Spalla del K2, dietro il Broad Peak', 'На Плечі K2, позаду Брод-Пік'],
   'ama-bc': ['cand:ama-dablam-himalayas-nepal.jpg', 'The trail to Ama Dablam base camp', 'Il sentiero verso il campo base dell’Ama Dablam', 'Стежка до базового табору Ама-Даблам'],
 };
 const credits = [...JSON.parse(readFileSync('assets/credits.json', 'utf8')), ...JSON.parse(readFileSync('cand/credits.json', 'utf8'))];

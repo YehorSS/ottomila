@@ -75,9 +75,9 @@ document.querySelectorAll<HTMLButtonElement>('.tabs [data-file]').forEach(b => b
   void select(b.dataset.file as FileId);
 }));
 
-const STRIP: [string, FileId][] = [['everest-c1', 'everest'], ['everest-col', 'everest'], ['k2-bottleneck', 'k2'], ['k2-top', 'k2'], ['manaslu-c3', 'manaslu']];
+const STRIP: [string, FileId][] = [['everest-c1', 'everest'], ['ama-top', 'ama-dablam'], ['everest-col', 'everest'], ['k2-c3', 'k2'], ['k2-bottleneck', 'k2'], ['manaslu-top', 'manaslu'], ['k2-top', 'k2'], ['ama-c2', 'ama-dablam'], ['manaslu-c3', 'manaslu']];
 function renderStrip(l: Lang) {
-  document.getElementById('strip')!.innerHTML = STRIP.map(([name, id], i) => `<figure class="${i === 3 ? 'tall' : ''}" data-rise>
+  document.getElementById('strip')!.innerHTML = STRIP.map(([name, id], i) => `<figure class="${i % 3 === 1 ? 'tall' : ''}" data-rise>
       <a href="${fileUrl(id)}"><img ${photoSet(name)} sizes="(max-width: 760px) 90vw, 40vw" alt="${esc(creditFor(name)?.alt[l] ?? '')}" width="1600" height="1066" loading="lazy"></a>
       <figcaption><span class="mono">${MOUNTAINS[id].no} · ${esc(MOUNTAINS[id].name[l]).toUpperCase()}</span>${esc(creditFor(name)?.alt[l] ?? '')}</figcaption>
     </figure>`).join('');

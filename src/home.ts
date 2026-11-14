@@ -2,7 +2,7 @@ import './styles/base.css';
 import { FILES, MOUNTAINS, type FileId, type Lang } from './content/mountains';
 import { euro, num, t } from './i18n';
 import { mountTerrain } from './terrain/scene';
-import { BASE, boot, creditFor, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
+import { boot, creditFor, esc, fileUrl, getLang, onLang, photoSet, rise } from './ui/shell';
 import { dossier, mountClearance } from './ui/dossier';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,7 +75,7 @@ function renderLadder(l: Lang) {
       <p class="mono lvl">${esc(t(l, 'file.level', { level })).toUpperCase()}${m.level === 4 ? ` · ${esc(t(l, 'file.invite')).toUpperCase()}` : ''}</p>
       <h3>${esc(m.name[l])}</h3>
       <p class="mono">${num(l, m.height)} m · ${esc(t(l, 'file.weeks', { n: m.weeks }))} · ${esc(t(l, 'file.from', { price: euro(l, m.priceFrom) }))}*</p>
-      <img class="shot" src="${BASE}photos/${id}-800.webp" alt="${esc(creditFor(id)?.alt[l] ?? m.name[l])}" width="800" height="533" loading="lazy">
+      <img class="shot" ${photoSet(id)} sizes="(max-width: 760px) 100vw, (max-width: 1000px) 50vw, 25vw" alt="${esc(creditFor(id)?.alt[l] ?? m.name[l])}" width="800" height="533" loading="lazy">
       <p>${esc(m.requirements[0][l])}</p>
       <a class="mono" href="${fileUrl(id)}">${esc(t(l, 'home.open', { no: m.no }))} →</a>
     </li>`;

@@ -1,14 +1,20 @@
 import { FILES, MOUNTAINS, type FileId, type Lang } from '../content/mountains';
 import { SOURCES } from '../content/sources';
 import { LANGS, pickLang, t, type Key } from '../i18n';
+import { mountScrollbar } from './scrollbar';
 
 export const PHONE = '+39 0471 000 849';
 export const TEL = 'tel:+390471000849';
 export const BASE = import.meta.env.BASE_URL;
 export const fileUrl = (id: FileId) => `${BASE}${id}/`;
+/** The photo widths on the site, for srcset. */
+export const photoSet = (name: string) => `src="${BASE}photos/${name}-1600.webp" srcset="${[960, 1600, 2560].map(w => `${BASE}photos/${name}-${w}.webp ${w}w`).join(', ')}"`;
 export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 
 let lang: Lang = 'en';
+let thumb: HTMLElement | null = null;
+/** Text on the scrollbar thumb, or nothing. */
+export const setThumbLabel = (text?: string) => { if (!thumb) return; if (text) thumb.dataset.label = text; else delete thumb.dataset.label; };
 const listeners: ((l: Lang) => void)[] = [];
 export const getLang = () => lang;
 export const onLang = (cb: (l: Lang) => void) => { listeners.push(cb); };
@@ -41,7 +47,7 @@ export function header(active?: FileId): string {
 export function footer(): string {
   const src = Object.entries(SOURCES).map(([, s]) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a></li>`).join('');
   return `<footer class="foot">
-    <div class="foot-call"><img class="night" src="${BASE}photos/night-1600.webp" alt="" width="1600" height="1074" loading="lazy"><p class="mono" data-t="call.title"></p><a class="big-phone" href="${TEL}">${PHONE}</a><p data-t="call.lead"></p></div>
+    <div class="foot-call"><img class="night" ${photoSet('night')} sizes="100vw" alt="" width="1600" height="1074" loading="lazy"><p class="mono" data-t="call.title"></p><a class="big-phone" href="${TEL}">${PHONE}</a><p data-t="call.lead"></p></div>
     <div class="foot-cols">
       <div><h2 class="mono" data-t="foot.sources"></h2><ul class="src">${src}</ul><p class="mono small" data-t="foot.terrain"></p></div>
       <div><h2 class="mono" data-t="foot.credits"></h2><ul class="src" id="credits"></ul></div>
@@ -58,6 +64,7 @@ export const creditFor = (name: string) => credits.find(c => c.name === name);
 export async function boot(active?: FileId): Promise<void> {
   document.body.insertAdjacentHTML('afterbegin', header(active));
   document.body.insertAdjacentHTML('beforeend', footer());
+  thumb = mountScrollbar();
   document.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang as Lang)));
   onLang(l => {
     document.querySelectorAll<HTMLElement>('[data-name]').forEach(el => { el.textContent = MOUNTAINS[el.dataset.name as FileId].name[l]; });

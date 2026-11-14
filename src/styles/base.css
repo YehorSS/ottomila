@@ -21,7 +21,8 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 body { margin: 0; background: var(--ground); color: var(--ink); font: 400 var(--s-body)/1.5 var(--sans); overflow-x: clip; }
 h1, h2, h3, p, dl, dd, ul, ol, figure { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
@@ -184,6 +185,15 @@ button, input { font: inherit; color: inherit; }
 .block li::before { content: ''; position: absolute; left: 0; top: 18px; width: 8px; height: 1px; background: var(--accent); }
 .src li { font-size: var(--s-small); }
 .next { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; }
+
+/* own scrollbar: a thin rail at the edge, ticks for the camps, the thumb reads the height */
+.sb-rail { position: fixed; top: 76px; bottom: 12px; right: max(2px, env(safe-area-inset-right, 0px)); width: 18px; z-index: 30; cursor: pointer; touch-action: none; }
+.sb-rail::before { content: ''; position: absolute; top: 0; bottom: 0; right: 6px; width: 1px; background: var(--line); }
+.sb-tick { position: absolute; right: 3px; width: 7px; height: 1px; background: var(--accent); }
+.sb-thumb { position: absolute; top: 0; right: 5px; width: 3px; background: var(--accent); transition: width 0.2s, right 0.2s; }
+.sb-rail:hover .sb-thumb, .sb-rail.drag .sb-thumb { width: 7px; right: 3px; }
+.sb-thumb[data-label]::before { content: attr(data-label); position: absolute; right: 14px; top: 50%; transform: translateY(-50%); padding: 4px 10px; background: var(--accent); color: var(--accent-ink); font: 600 13px/1.4 var(--mono); letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; }
+@media (pointer: coarse) { .sb-rail { display: none; } }
 
 /* footer */
 .foot { position: relative; z-index: 2; padding: clamp(80px, 12vh, 140px) var(--gutter) 32px; border-top: 1px solid var(--line); background: var(--ground); }

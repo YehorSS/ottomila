@@ -1,11 +1,13 @@
 import {
-  ColorManagement, LinearSRGBColorSpace, BufferGeometry, TextureLoader, NoColorSpace, type Texture, CatmullRomCurve3, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, TubeGeometry, Vector3, WebGLRenderer,
+  ColorManagement, LinearSRGBColorSpace, BufferGeometry, TextureLoader, NoColorSpace, RepeatWrapping, type Texture, CatmullRomCurve3, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, TubeGeometry, Vector3, WebGLRenderer,
 } from 'three';
 import type { FileId, Mountain } from '../content/mountains';
 import { loadHeights, type AreaMeta } from './decode';
 import { makeArea, SIZE, EXAG, type Area } from './geo';
 import { cameraStops, damp, placeCamps, routeLine, type Point, type Stop } from './camera';
 import { drawStill, topoMaterial } from './material';
+import { occlusion, upsample } from './detail';
+import { BufferAttribute } from 'three';
 import { Governor } from './quality';
 
 const BASE = import.meta.env.BASE_URL;
@@ -34,6 +36,15 @@ function loadSat(id: FileId, small: boolean): Promise<Texture | null> {
   return sats.get(id)!;
 }
 
+let detailTex: Promise<(Texture | null)[]> | null = null;
+/** The three close-range textures, shared by every mountain; repeated, mipmapped. */
+function loadDetail(): Promise<(Texture | null)[]> {
+  detailTex ??= Promise.all(['rock', 'snow', 'field'].map(n => new TextureLoader().loadAsync(`${BASE}terrain/detail-${n}.webp`).then(t => {
+    t.colorSpace = NoColorSpace; t.wrapS = t.wrapT = RepeatWrapping; t.anisotropy = 8; return t;
+  }, () => null)));
+  return detailTex;
+}
+
 export interface TerrainView {
   show(m: Mountain, labels: string[]): Promise<void>;
   setStop(i: number): void;
@@ -45,7 +56,7 @@ export interface TerrainView {
 
 export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, opts: { reduced: boolean; small: boolean; shift?: number }): TerrainView {
   let renderer: WebGLRenderer | null = null;
-  try { renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch { renderer = null; }
+  try { renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch { renderer = null; }
 
   const scene = new Scene();
   const camera = new PerspectiveCamera(32, 1, 0.05, 200);
@@ -150,7 +161,7 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
   }
 
   async function show(m: Mountain, labels: string[]) {
-    const [area, sat] = await Promise.all([loadArea(m.id, opts.small), renderer ? loadSat(m.id, opts.small) : Promise.resolve(null)]);
+    const [area, sat, detail] = await Promise.all([loadArea(m.id, opts.small), renderer ? loadSat(m.id, opts.small) : Promise.resolve(null), renderer ? loadDetail() : Promise.resolve([])]);
     camps = placeCamps(area, m);
     stops = cameraStops(area, camps);
     if (!renderer) {
@@ -167,12 +178,21 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     }
     if (terrain) { scene.remove(terrain); terrain.geometry.dispose(); }
     if (route) { scene.remove(route); route.geometry.dispose(); }
-    const geo = new PlaneGeometry(SIZE, SIZE, area.n - 1, area.n - 1);
+    // a finer, smooth mesh than the data grid, and each point's open sky for the gullies
+    const M = opts.small ? 512 : 1024;
+    const hs = upsample(area.h, area.n, M);
+    const ao = upsample(occlusion(area.h, area.n, area.sizeM / (area.n - 1)), area.n, M);
+    const geo = new PlaneGeometry(SIZE, SIZE, M - 1, M - 1);
     geo.rotateX(-Math.PI / 2);
     const pos = geo.getAttribute('position');
-    for (let i = 0; i < pos.count; i++) pos.setY(i, (area.h[i] / 1000) * EXAG);
+    for (let i = 0; i < pos.count; i++) pos.setY(i, (hs[i] / 1000) * EXAG);
+    geo.setAttribute('ao', new BufferAttribute(ao.map(v => Math.max(0, Math.min(1, v))), 1));
     geo.computeVertexNormals();
+    const [rock, snow, field] = detail;
+    Object.assign(material.uniforms.uRock, { value: rock ?? null }); Object.assign(material.uniforms.uSnowT, { value: snow ?? null }); Object.assign(material.uniforms.uField, { value: field ?? null });
+    material.uniforms.uHasDetail.value = rock && snow && field ? 1 : 0;
     material.uniforms.uSat.value = sat;
+    material.uniforms.uTexel.value = 1 / (opts.small ? 1024 : 2048);
     material.uniforms.uHasSat.value = sat ? 1 : 0;
     terrain = new Mesh(geo, material);
     scene.add(terrain);
@@ -185,7 +205,7 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     request();
   }
 
-  if (renderer) { renderer.outputColorSpace = LinearSRGBColorSpace; renderer.toneMapping = 0; renderer.setClearColor('#0b0f0d'); }
+  if (renderer) { renderer.outputColorSpace = LinearSRGBColorSpace; renderer.toneMapping = 0; renderer.setClearColor('#000000', 0); }
 
   return {
     show,

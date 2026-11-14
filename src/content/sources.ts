@@ -15,5 +15,6 @@ export const SOURCES: Record<string, { title: string; url: string }> = {
   'wiki-ama': { title: 'Wikipedia — Ama Dablam', url: 'https://en.wikipedia.org/wiki/Ama_Dablam' },
   'copernicus-dem': { title: 'Copernicus DEM GLO-30 (ESA), terrain on every map', url: 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model' },
   'sentinel2': { title: 'Contains modified Copernicus Sentinel-2 data (2020, 2025), imagery on every map', url: 'https://registry.opendata.aws/sentinel-2-l2a-cogs/' },
+  'polyhaven': { title: 'Close-range rock and snow detail: Poly Haven textures (Rock Face 04 by Dimitrios Savva, Snow 02, Snow Field Aerial), CC0', url: 'https://polyhaven.com/textures' },
   'barometric': { title: 'International Standard Atmosphere — pressure with height', url: 'https://en.wikipedia.org/wiki/Barometric_formula' },
 };

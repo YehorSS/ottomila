@@ -34,14 +34,18 @@ main.innerHTML = `
 
 await boot(id);
 
-const view = mountTerrain(document.getElementById('map') as HTMLCanvasElement, document.getElementById('overlay')!, { reduced, small, shift: 0.19 });
+const view = mountTerrain(document.getElementById('map') as HTMLCanvasElement, document.getElementById('overlay')!, { reduced, small, shift: 0.19, onPick: i => goCamp(i + 1) });
+// a click on a pin brings its camp into the middle of the screen, where it takes the camera
+function goCamp(n: number, smooth = !reduced) {
+  document.getElementById(`camp-${n}`)?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+}
 const pins = (l: Lang) => m.camps.map((c, i) => i === m.camps.length - 1 ? `<b>${esc(c.name[l])}</b>${num(l, m.height)} m` : `${esc(c.name[l])}<i>${num(l, c.height)} m</i>`);
 
 const list = (title: string, items: string[]) => `<div class="block" data-rise><h3 class="mono">${esc(title).toUpperCase()}</h3><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`;
 
 function render(l: Lang) {
   document.getElementById('intro')!.innerHTML = dossier(m, l);
-  document.getElementById('camps')!.innerHTML = m.camps.map((c, i) => `<li class="camp" data-stop="${i + 1}">
+  document.getElementById('camps')!.innerHTML = m.camps.map((c, i) => `<li class="camp" id="camp-${i + 1}" data-stop="${i + 1}">
       <p class="mono day">${esc(t(l, 'file.day', { n: c.day }))}</p>
       <h3>${esc(c.name[l])}</h3>
       <p class="alt mono">${num(l, c.height)} m · ${esc(t(l, 'file.oxygen', { p: Math.round(oxygenShare(c.height) * 100) }))}</p>
@@ -86,3 +90,5 @@ onLang(l => { render(l); quiz(l); });
 await view.show(m, pins(getLang()));
 render(getLang());
 view.setStop(0);
+// links from the home map land on a camp: #camp-2
+{ const n = /^#camp-(\d+)$/.exec(location.hash)?.[1]; if (n) goCamp(Number(n), false); }

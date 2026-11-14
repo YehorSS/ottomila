@@ -47,7 +47,7 @@ main.innerHTML = `
 await boot();
 
 let current: FileId = (location.hash.slice(1) as FileId) in MOUNTAINS ? (location.hash.slice(1) as FileId) : 'everest';
-const view = mountTerrain(document.getElementById('map') as HTMLCanvasElement, document.getElementById('overlay')!, { reduced, small, shift: 0.19 });
+const view = mountTerrain(document.getElementById('map') as HTMLCanvasElement, document.getElementById('overlay')!, { reduced, small, shift: 0.19, onPick: i => { location.href = `${fileUrl(current)}#camp-${i + 1}`; } });
 view.setOrbit(true);
 const stage = document.querySelector<HTMLElement>('.stage')!;
 

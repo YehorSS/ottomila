@@ -79,7 +79,10 @@ button, input { font: inherit; color: inherit; }
 .pin.left { padding: 3px 16px 3px 8px; text-align: right; }
 .pin b { white-space: normal; max-width: 10em; }
 .pin.left::before { left: auto; right: -5px; }
-.pin.hide { opacity: 0; }
+.pin.hide { opacity: 0; pointer-events: none; }
+.overlay .pin { pointer-events: auto; cursor: pointer; }
+.overlay .pin.hide { pointer-events: none; }
+.pin:not(.on):hover { background: rgba(11, 15, 13, 0.96); color: var(--accent); }
 .legend { position: absolute; right: var(--gutter); top: 84px; z-index: 3; font-size: 13px; color: var(--soft); line-height: 2; text-align: right; pointer-events: none; background: rgba(11, 15, 13, 0.82); padding: 6px 12px; }
 .legend span::before { content: ''; display: inline-block; width: 22px; height: 2px; margin-right: 8px; vertical-align: middle; background: var(--accent); }
 .legend span.thin::before { height: 1px; background: var(--soft); }

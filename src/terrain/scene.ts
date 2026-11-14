@@ -54,7 +54,7 @@ export interface TerrainView {
   readonly camps: Point[];
 }
 
-export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, opts: { reduced: boolean; small: boolean; shift?: number }): TerrainView {
+export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, opts: { reduced: boolean; small: boolean; shift?: number; onPick?: (i: number) => void }): TerrainView {
   let renderer: WebGLRenderer | null = null;
   try { renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch { renderer = null; }
 
@@ -62,6 +62,7 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
   const camera = new PerspectiveCamera(32, 1, 0.05, 200);
   const material = topoMaterial();
   let terrain: Mesh | null = null, route: Mesh | null = null;
+  let held = false;
   let stops: Stop[] = [], stop = 0, orbit = false, camps: Point[] = [], pins: HTMLElement[] = [];
   const cur = { pos: new Vector3(0, 20, 20), target: new Vector3() };
   let first = true;
@@ -127,7 +128,8 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
       // a narrow stage needs the overview further back to hold the whole route
       if (stop === 0 && camera.aspect < 1.3) p.sub(q).multiplyScalar(1.3 / Math.max(0.6, camera.aspect)).add(q);
       if (orbit && stop === 0 && !opts.reduced) {
-        t += dt * 0.05;
+        // the turn pauses under the cursor so a pin can be clicked
+        if (!held) t += dt * 0.05;
         const ox = p.x - q.x, oz = p.z - q.z;
         p.x = q.x + ox * Math.cos(t) - oz * Math.sin(t);
         p.z = q.z + ox * Math.sin(t) + oz * Math.cos(t);
@@ -154,6 +156,11 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
       const el = document.createElement('div');
       el.className = 'pin' + (i === labels.length - 1 ? ' summit' : '');
       el.innerHTML = text;
+      if (opts.onPick) {
+        el.addEventListener('click', () => opts.onPick!(i));
+        el.addEventListener('pointerenter', () => { held = true; });
+        el.addEventListener('pointerleave', () => { held = false; });
+      }
       overlay.appendChild(el);
       return el;
     });

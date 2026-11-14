@@ -30,7 +30,8 @@ export function dossier(m: Mountain, l: Lang, opts: { open?: boolean } = {}): st
 
 const Q: { key: keyof Answers; q: string; opts: [string, unknown][] }[] = [
   { key: 'alt', q: 'clear.q1', opts: [['clear.a0', 0], ['clear.a1', 1], ['clear.a2', 2], ['clear.a3', 3]] },
-  { key: 'eight', q: 'clear.q2', opts: [['clear.no', false], ['clear.yes', true]] },
+  { key: 'tech', q: 'clear.q5', opts: [['clear.k0', 0], ['clear.k1', 1], ['clear.k2', 2]] },
+  { key: 'nights', q: 'clear.q6', opts: [['clear.n0', 0], ['clear.n1', 1], ['clear.n2', 2]] },
   { key: 'weeks', q: 'clear.q3', opts: [['clear.w0', 0], ['clear.w1', 1], ['clear.w2', 2]] },
   { key: 'training', q: 'clear.q4', opts: [['clear.t0', 0], ['clear.t1', 1], ['clear.t2', 2]] },
 ];

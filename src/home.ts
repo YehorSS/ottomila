@@ -61,6 +61,8 @@ async function select(id: FileId, animate = true) {
   const l = getLang();
   document.querySelectorAll<HTMLButtonElement>('.tabs [data-file]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.file === id)));
   document.getElementById('card')!.innerHTML = dossier(MOUNTAINS[id], l, { open: true });
+  // start fetching and building while the old map fades out
+  view.preload([id]);
   if (animate && !reduced) stage.classList.add('fade');
   await new Promise(r => setTimeout(r, animate && !reduced ? 350 : 0));
   await view.show(MOUNTAINS[id], pinLabels(id, l));
@@ -118,3 +120,5 @@ renderStrip(getLang());
 }
 rise();
 await select(current, false);
+// the other three get ready in the background, so the tabs switch quickly
+view.preload(FILES.filter(f => f !== current));

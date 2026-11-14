@@ -6,7 +6,7 @@ import { loadHeights, type AreaMeta } from './decode';
 import { makeArea, SIZE, EXAG, type Area } from './geo';
 import { cameraStops, damp, placeCamps, routeLine, type Point, type Stop } from './camera';
 import { drawStill, topoMaterial } from './material';
-import { occlusion, upsample } from './detail';
+import { buildSurface, type Surface } from './detail';
 import { BufferAttribute } from 'three';
 import { Governor } from './quality';
 
@@ -36,6 +36,27 @@ function loadSat(id: FileId, small: boolean): Promise<Texture | null> {
   return sats.get(id)!;
 }
 
+// the heavy mesh maths runs off the main thread, once per mountain; switching back is instant
+let worker: Worker | null = null, jobs = 0;
+const waiting = new Map<number, (s: Surface) => void>();
+const surfaces = new Map<string, Promise<Surface>>();
+function surface(id: FileId, area: Area, m: number): Promise<Surface> {
+  const key = `${id}-${m}`;
+  if (!surfaces.has(key)) surfaces.set(key, new Promise<Surface>(done => {
+    const cell = area.sizeM / (area.n - 1);
+    try {
+      worker ??= new Worker(new URL('./build.worker.ts', import.meta.url), { type: 'module' });
+      worker.onmessage = (e: MessageEvent<Surface & { id: number }>) => { waiting.get(e.data.id)?.(e.data); waiting.delete(e.data.id); };
+      const job = ++jobs;
+      waiting.set(job, done);
+      worker.postMessage({ id: job, h: area.h.slice(), n: area.n, m, cell, size: SIZE, exag: EXAG });
+    } catch {
+      done(buildSurface(area.h, area.n, m, cell, SIZE, EXAG));
+    }
+  }));
+  return surfaces.get(key)!;
+}
+
 let detailTex: Promise<(Texture | null)[]> | null = null;
 /** The three close-range textures, shared by every mountain; repeated, mipmapped. */
 function loadDetail(): Promise<(Texture | null)[]> {
@@ -51,6 +72,8 @@ export interface TerrainView {
   setLabels(labels: string[]): void;
   /** slow turn around the overview, for the home page */
   setOrbit(on: boolean): void;
+  /** fetch and build these mountains in the background, so switching to them is quick */
+  preload(ids: FileId[]): void;
   readonly camps: Point[];
 }
 
@@ -167,7 +190,11 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     placePins();
   }
 
+  const M = opts.small ? 512 : 1024;
+  let shown: FileId | null = null;
+
   async function show(m: Mountain, labels: string[]) {
+    shown = m.id;
     const [area, sat, detail] = await Promise.all([loadArea(m.id, opts.small), renderer ? loadSat(m.id, opts.small) : Promise.resolve(null), renderer ? loadDetail() : Promise.resolve([])]);
     camps = placeCamps(area, m);
     stops = cameraStops(area, camps);
@@ -183,26 +210,30 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
       overlay.prepend(still);
       return;
     }
-    if (terrain) { scene.remove(terrain); terrain.geometry.dispose(); }
-    if (route) { scene.remove(route); route.geometry.dispose(); }
     // a finer, smooth mesh than the data grid, and each point's open sky for the gullies
-    const M = opts.small ? 512 : 1024;
-    const hs = upsample(area.h, area.n, M);
-    const ao = upsample(occlusion(area.h, area.n, area.sizeM / (area.n - 1)), area.n, M);
-    const geo = new PlaneGeometry(SIZE, SIZE, M - 1, M - 1);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.getAttribute('position');
-    for (let i = 0; i < pos.count; i++) pos.setY(i, (hs[i] / 1000) * EXAG);
-    geo.setAttribute('ao', new BufferAttribute(ao.map(v => Math.max(0, Math.min(1, v))), 1));
-    geo.computeVertexNormals();
+    const surf = await surface(m.id, area, M);
+    if (shown !== m.id) return; // another mountain was picked while this one was building
+    if (route) { scene.remove(route); route.geometry.dispose(); }
+    // one grid for every mountain: only heights, normals and sky change
+    if (!terrain) {
+      const g = new PlaneGeometry(SIZE, SIZE, M - 1, M - 1);
+      g.rotateX(-Math.PI / 2);
+      g.setAttribute('ao', new BufferAttribute(new Float32Array(M * M), 1));
+      terrain = new Mesh(g, material);
+      terrain.frustumCulled = false; // heights change under a fixed bounding sphere
+      scene.add(terrain);
+    }
+    const geo = terrain.geometry;
+    const pos = geo.getAttribute('position') as BufferAttribute, nor = geo.getAttribute('normal') as BufferAttribute, aoA = geo.getAttribute('ao') as BufferAttribute;
+    for (let i = 0; i < pos.count; i++) pos.array[i * 3 + 1] = surf.y[i];
+    (nor.array as Float32Array).set(surf.normal); (aoA.array as Float32Array).set(surf.ao);
+    pos.needsUpdate = nor.needsUpdate = aoA.needsUpdate = true;
     const [rock, snow, field] = detail;
     Object.assign(material.uniforms.uRock, { value: rock ?? null }); Object.assign(material.uniforms.uSnowT, { value: snow ?? null }); Object.assign(material.uniforms.uField, { value: field ?? null });
     material.uniforms.uHasDetail.value = rock && snow && field ? 1 : 0;
     material.uniforms.uSat.value = sat;
     material.uniforms.uTexel.value = 1 / (opts.small ? 1024 : 2048);
     material.uniforms.uHasSat.value = sat ? 1 : 0;
-    terrain = new Mesh(geo, material);
-    scene.add(terrain);
     const line = routeLine(area, m, 600).map(p => new Vector3(p.x, p.y + 0.03, p.z));
     route = new Mesh(new TubeGeometry(new CatmullRomCurve3(line), 800, 0.02, 6) as BufferGeometry, new MeshBasicMaterial({ color: '#ff6d1f' }));
     scene.add(route);
@@ -218,6 +249,10 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     show,
     setStop(i) { stop = Math.max(0, Math.min(stops.length - 1, i)); request(); },
     setLabels,
+    preload(ids) {
+      // one after another, so the visible mountain never waits behind them
+      void ids.reduce<Promise<unknown>>((p, id) => p.then(() => Promise.all([loadArea(id, opts.small).then(a => renderer ? surface(id, a, M) : null), renderer ? loadSat(id, opts.small) : null])), Promise.resolve());
+    },
     setOrbit(on) { orbit = on; request(); },
     get camps() { return camps; },
   };

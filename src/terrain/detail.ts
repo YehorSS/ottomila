@@ -50,3 +50,22 @@ export function occlusion(h: Float32Array, n: number, cell: number): Float32Arra
   }
   return out;
 }
+
+export interface Surface { y: Float32Array; normal: Float32Array; ao: Float32Array }
+
+/** The whole terrain mesh data on an m×m grid: world heights, normals and sky visibility. Heavy, so it runs in a worker. */
+export function buildSurface(h: Float32Array, n: number, m: number, cellM: number, size: number, exag: number): Surface {
+  const hs = upsample(h, n, m);
+  const ao = upsample(occlusion(h, n, cellM), n, m).map(v => Math.max(0, Math.min(1, v)));
+  const y = hs.map(v => (v / 1000) * exag);
+  const normal = new Float32Array(m * m * 3), d = size / (m - 1);
+  for (let r = 0; r < m; r++) for (let c = 0; c < m; c++) {
+    const i = r * m + c;
+    const c0 = Math.max(0, c - 1), c1 = Math.min(m - 1, c + 1), r0 = Math.max(0, r - 1), r1 = Math.min(m - 1, r + 1);
+    // a heightfield's normal: (-dy/dx, 1, -dy/dz); rows run along +z, columns along +x
+    const nx = -(y[r * m + c1] - y[r * m + c0]) / ((c1 - c0) * d), nz = -(y[r1 * m + c] - y[r0 * m + c]) / ((r1 - r0) * d);
+    const l = Math.hypot(nx, 1, nz);
+    normal[i * 3] = nx / l; normal[i * 3 + 1] = 1 / l; normal[i * 3 + 2] = nz / l;
+  }
+  return { y, normal, ao };
+}

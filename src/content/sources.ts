@@ -14,5 +14,6 @@ export const SOURCES: Record<string, { title: string; url: string }> = {
   'explorersweb-ama': { title: 'Explorersweb — Ama Dablam: a climbers’ guide', url: 'https://explorersweb.com/ama-dablam-a-climbers-guide/' },
   'wiki-ama': { title: 'Wikipedia — Ama Dablam', url: 'https://en.wikipedia.org/wiki/Ama_Dablam' },
   'copernicus-dem': { title: 'Copernicus DEM GLO-30 (ESA), terrain on every map', url: 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model' },
+  'sentinel2': { title: 'Contains modified Copernicus Sentinel-2 data (2020, 2025), imagery on every map', url: 'https://registry.opendata.aws/sentinel-2-l2a-cogs/' },
   'barometric': { title: 'International Standard Atmosphere — pressure with height', url: 'https://en.wikipedia.org/wiki/Barometric_formula' },
 };

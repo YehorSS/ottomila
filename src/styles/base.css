@@ -80,7 +80,7 @@ button, input { font: inherit; color: inherit; }
 .pin b { white-space: normal; max-width: 10em; }
 .pin.left::before { left: auto; right: -5px; }
 .pin.hide { opacity: 0; }
-.legend { position: absolute; right: var(--gutter); top: 84px; z-index: 3; font-size: 13px; color: var(--soft); line-height: 2; text-align: right; pointer-events: none; }
+.legend { position: absolute; right: var(--gutter); top: 84px; z-index: 3; font-size: 13px; color: var(--soft); line-height: 2; text-align: right; pointer-events: none; background: rgba(11, 15, 13, 0.82); padding: 6px 12px; }
 .legend span::before { content: ''; display: inline-block; width: 22px; height: 2px; margin-right: 8px; vertical-align: middle; background: var(--accent); }
 .legend span.thin::before { height: 1px; background: var(--soft); }
 

@@ -1,11 +1,14 @@
-import { Color, ShaderMaterial, Vector3 } from 'three';
+import { Color, ShaderMaterial, Vector3, type Texture } from 'three';
 import { EXAG, SIZE } from './geo';
 
 /** The topographic look: grey hillshade, lighter snow up high, thin 50 m and orange 500 m contours, edges fading into the ground. */
 export function topoMaterial(): ShaderMaterial {
   return new ShaderMaterial({
     uniforms: {
-      uLight: { value: new Vector3(-0.55, 0.75, -0.35).normalize() },
+      // the sun of the satellite pass (late morning in autumn, from the south-south-east), so 3D shading agrees with the photo's own shadows
+      uLight: { value: new Vector3(0.34, 0.57, 0.74).normalize() },
+      uSat: { value: null as Texture | null },
+      uHasSat: { value: 0 },
       uEx: { value: EXAG },
       uHalf: { value: SIZE / 2 },
       uGround: { value: new Color('#0b0f0d') },
@@ -16,15 +19,15 @@ export function topoMaterial(): ShaderMaterial {
       uIndex: { value: new Color('#ff6d1f') },
     },
     vertexShader: /* glsl */ `
-      varying vec3 vN; varying float vM; varying vec2 vXZ;
+      varying vec3 vN; varying float vM; varying vec2 vXZ; varying vec2 vUv;
       uniform float uEx;
       void main() {
-        vN = normal; vM = position.y / uEx * 1000.; vXZ = position.xz;
+        vN = normal; vM = position.y / uEx * 1000.; vXZ = position.xz; vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
       }`,
     fragmentShader: /* glsl */ `
-      varying vec3 vN; varying float vM; varying vec2 vXZ;
-      uniform vec3 uLight, uGround, uLow, uHigh, uSnow, uMinor, uIndex; uniform float uHalf;
+      varying vec3 vN; varying float vM; varying vec2 vXZ; varying vec2 vUv;
+      uniform vec3 uLight, uGround, uLow, uHigh, uSnow, uMinor, uIndex; uniform float uHalf, uHasSat; uniform sampler2D uSat;
       float line(float v, float width) { float w = fwidth(v) * width; float d = min(fract(v), 1. - fract(v)); return 1. - smoothstep(0., w, d); }
       void main() {
         vec3 n = normalize(vN);
@@ -32,7 +35,16 @@ export function topoMaterial(): ShaderMaterial {
         vec3 col = mix(uLow, uHigh, shade);
         float snow = smoothstep(5300., 6200., vM) * smoothstep(.45, .7, n.y);
         col = mix(col, uSnow * (.4 + .6 * shade), snow * .18);
-        col = mix(col, uMinor, line(vM / 50., 1.) * .22);
+        if (uHasSat > .5) {
+          // the real surface: Sentinel-2 at 10 m, a little quieter so the orange lines lead
+          vec3 sat = texture2D(uSat, vUv).rgb;
+          float l = dot(sat, vec3(.299, .587, .114));
+          sat = mix(vec3(l), sat, .82) * .9;
+          col = sat * clamp(dot(n, uLight) * .45 + .68, .45, 1.12);
+          col = mix(col, vec3(1.), line(vM / 100., 1.) * .07);
+        } else {
+          col = mix(col, uMinor, line(vM / 50., 1.) * .22);
+        }
         col = mix(col, uIndex, line(vM / 500., 1.7) * .95);
         // fade the square's hard edge into the page
         float edge = smoothstep(uHalf, uHalf * .72, max(abs(vXZ.x), abs(vXZ.y)));

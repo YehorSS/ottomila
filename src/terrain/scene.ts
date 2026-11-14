@@ -1,5 +1,5 @@
 import {
-  ColorManagement, LinearSRGBColorSpace, BufferGeometry, CatmullRomCurve3, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, TubeGeometry, Vector3, WebGLRenderer,
+  ColorManagement, LinearSRGBColorSpace, BufferGeometry, TextureLoader, NoColorSpace, type Texture, CatmullRomCurve3, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, TubeGeometry, Vector3, WebGLRenderer,
 } from 'three';
 import type { FileId, Mountain } from '../content/mountains';
 import { loadHeights, type AreaMeta } from './decode';
@@ -24,6 +24,14 @@ export function loadArea(id: FileId, small: boolean): Promise<Area> {
     })());
   }
   return cache.get(id)!;
+}
+
+const sats = new Map<FileId, Promise<Texture | null>>();
+/** The satellite image draped on the terrain; null if it fails to load (the plain map stays). */
+export const satUrl = (id: FileId, small: boolean) => `${BASE}terrain/${id}-sat-${small ? 1024 : 2048}.webp`;
+function loadSat(id: FileId, small: boolean): Promise<Texture | null> {
+  if (!sats.has(id)) sats.set(id, new TextureLoader().loadAsync(satUrl(id, small)).then(t => { t.colorSpace = NoColorSpace; t.anisotropy = 8; return t; }, () => null));
+  return sats.get(id)!;
 }
 
 export interface TerrainView {
@@ -142,14 +150,17 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
   }
 
   async function show(m: Mountain, labels: string[]) {
-    const area = await loadArea(m.id, opts.small);
+    const [area, sat] = await Promise.all([loadArea(m.id, opts.small), renderer ? loadSat(m.id, opts.small) : Promise.resolve(null)]);
     camps = placeCamps(area, m);
     stops = cameraStops(area, camps);
     if (!renderer) {
       // no WebGL: a flat hillshade map with the camps on it
-      const still = document.createElement('canvas');
+      // the satellite image as a flat map; the drawn relief if even that is missing
+      const still = document.createElement('img');
       still.className = 'still';
-      drawStill(still, area.h, area.n);
+      still.alt = '';
+      still.src = satUrl(m.id, opts.small);
+      still.onerror = () => { const cv = document.createElement('canvas'); cv.className = 'still'; drawStill(cv, area.h, area.n); still.replaceWith(cv); };
       overlay.querySelector('.still')?.remove();
       overlay.prepend(still);
       return;
@@ -161,6 +172,8 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     const pos = geo.getAttribute('position');
     for (let i = 0; i < pos.count; i++) pos.setY(i, (area.h[i] / 1000) * EXAG);
     geo.computeVertexNormals();
+    material.uniforms.uSat.value = sat;
+    material.uniforms.uHasSat.value = sat ? 1 : 0;
     terrain = new Mesh(geo, material);
     scene.add(terrain);
     const line = routeLine(area, m, 600).map(p => new Vector3(p.x, p.y + 0.03, p.z));

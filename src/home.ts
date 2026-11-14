@@ -12,7 +12,7 @@ const main = document.getElementById('main')!;
 main.innerHTML = `
 <section class="index" id="files" aria-labelledby="home-title">
   <div class="stage"><canvas id="map" aria-hidden="true"></canvas><div class="overlay" id="overlay"></div></div>
-  <div class="legend mono"><span data-t="map.c500"></span><br><span class="thin" data-t="map.c50"></span><br>Copernicus DEM 30 m</div>
+  <div class="legend mono"><span data-t="map.c500"></span><br><span class="thin" data-t="map.c50"></span><br>Copernicus DEM 30 m · Sentinel-2</div>
   <aside class="panel">
     <p class="kicker mono" data-t="home.kicker"></p>
     <p class="home-title" id="home-title" data-t="home.title"></p>

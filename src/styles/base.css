@@ -49,6 +49,7 @@ button, input { font: inherit; color: inherit; }
 .langs button { background: none; border: 0; padding: 8px 8px; min-width: 40px; min-height: 40px; cursor: pointer; color: var(--soft); }
 .langs button[aria-pressed='true'] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.4em; }
 .phone { text-decoration: none; padding: 10px 14px; box-shadow: inset 0 0 0 1px var(--ink); white-space: nowrap; }
+.phone .short { display: none; }
 
 /* the map stage */
 .stage { position: relative; overflow: hidden; background: var(--ground); transition: opacity 0.35s var(--ease); }
@@ -145,7 +146,7 @@ button, input { font: inherit; color: inherit; }
 .column .quiz, .column .stamps { grid-template-columns: 1fr; }
 .climb .hint { margin-top: 6px; }
 .camps { margin: 28px 0 20px; }
-.camp { min-height: 64svh; padding: 22px 0; border-top: 1px solid var(--line); opacity: 0.45; transition: opacity 0.4s var(--ease); }
+.camp { min-height: 52svh; padding: 22px 0; border-top: 1px solid var(--line); opacity: 0.45; transition: opacity 0.4s var(--ease); }
 .camp.on { opacity: 1; }
 .camp .day { color: var(--accent); font-size: 12px; }
 .camp h3 { font: 700 2.5rem/1 var(--sans); margin: 8px 0; }
@@ -186,6 +187,9 @@ button, input { font: inherit; color: inherit; }
   .top { gap: 12px; padding: 10px 16px; }
   .tools { margin-left: auto; gap: 8px; }
   .phone { padding: 8px 10px; font-size: 12px; }
+  .phone .full { display: none; }
+  .phone .short { display: inline; }
+  .langs button { min-width: 36px; padding: 8px 4px; }
   .index { height: auto; min-height: 0; }
   .index .stage { position: relative; height: 52svh; margin-top: 56px; }
   .legend { display: none; }

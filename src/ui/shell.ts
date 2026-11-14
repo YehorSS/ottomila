@@ -33,7 +33,7 @@ export function header(active?: FileId): string {
     <nav class="files" aria-label="Files">${tabs}</nav>
     <div class="tools">
       <div class="langs mono" role="group" aria-label="Language">${LANGS.map(l => `<button type="button" data-lang="${l}">${l.toUpperCase()}</button>`).join('')}</div>
-      <a class="phone mono" href="${TEL}">${PHONE}</a>
+      <a class="phone mono" href="${TEL}"><span class="full">${PHONE}</span><span class="short" data-t="nav.call"></span></a>
     </div>
   </header>`;
 }

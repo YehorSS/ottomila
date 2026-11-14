@@ -57,9 +57,9 @@ export function cameraStops(a: Area, camps: Point[]): Stop[] {
     const next = camps[Math.min(i + 1, camps.length - 1)], prev = camps[Math.max(i - 1, 0)];
     let dx = (i < camps.length - 1 ? next.x - c.x : c.x - prev.x), dz = (i < camps.length - 1 ? next.z - c.z : c.z - prev.z);
     const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
-    const px = c.x - dx * 2.8 - dz * 1.4, pz = c.z - dz * 2.8 + dx * 1.4;
+    const px = c.x - dx * 4.6 - dz * 2.2, pz = c.z - dz * 4.6 + dx * 2.2;
     // stay above the ground under the camera as well as above the camp
-    const py = Math.max(c.y, worldY(heightAt(a, px, pz))) + 1.6;
+    const py = Math.max(c.y, worldY(heightAt(a, px, pz))) + 3.4;
     stops.push({ pos: [px, py, pz], target: [c.x + dx * 0.7, c.y + 0.15, c.z + dz * 0.7] });
   });
   return stops;

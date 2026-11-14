@@ -73,15 +73,23 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
   const v = new Vector3();
   function placePins() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    camps.forEach((c, i) => {
-      const el = pins[i];
-      if (!el) return;
+    const active = stop === 0 ? camps.length - 1 : stop - 1;
+    // the summit and the current camp claim their place first; any label that would overlap them is hidden
+    const order = [...new Set([camps.length - 1, active, ...camps.keys()])];
+    const taken: [number, number, number, number][] = [];
+    for (const i of order) {
+      const el = pins[i], c = camps[i];
+      if (!el || !c) continue;
       v.set(c.x, c.y, c.z).project(camera);
-      const on = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
-      el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px)`;
-      el.classList.toggle('hide', !on);
-      el.classList.toggle('on', i === stop - 1 || (stop === 0 && i === camps.length - 1));
-    });
+      const x = ((v.x + 1) / 2) * w, y = ((1 - v.y) / 2) * h;
+      const box: [number, number, number, number] = [x - 6, y - 10, x + 120, y + 26];
+      const inView = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
+      const clash = taken.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      el.classList.toggle('hide', !inView || clash);
+      el.classList.toggle('on', i === active);
+      if (inView && !clash) taken.push(box);
+    }
   }
 
   function frame(now: number) {
@@ -94,6 +102,8 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     let moving = false;
     if (s) {
       const p = new Vector3(...s.pos), q = new Vector3(...s.target);
+      // a narrow stage needs the overview further back to hold the whole route
+      if (stop === 0 && camera.aspect < 1.3) p.sub(q).multiplyScalar(1.3 / Math.max(0.6, camera.aspect)).add(q);
       if (orbit && stop === 0 && !opts.reduced) {
         t += dt * 0.05;
         const ox = p.x - q.x, oz = p.z - q.z;
@@ -151,7 +161,7 @@ export function mountTerrain(canvas: HTMLCanvasElement, overlay: HTMLElement, op
     terrain = new Mesh(geo, material);
     scene.add(terrain);
     const line = routeLine(area, m, 600).map(p => new Vector3(p.x, p.y + 0.03, p.z));
-    route = new Mesh(new TubeGeometry(new CatmullRomCurve3(line), 800, 0.03, 6) as BufferGeometry, new MeshBasicMaterial({ color: '#ff6d1f' }));
+    route = new Mesh(new TubeGeometry(new CatmullRomCurve3(line), 800, 0.02, 6) as BufferGeometry, new MeshBasicMaterial({ color: '#ff6d1f' }));
     scene.add(route);
     setLabels(labels);
     first = true;

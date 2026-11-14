@@ -58,7 +58,8 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     name: T('Ama Dablam', 'Ama Dablam', 'Ама-Даблам'),
     height: 6812,
     summit: { lat: 27.8617, lon: 86.8614 },
-    path: [[27.8447, 86.8330], [27.8505, 86.8448], [27.8546, 86.8517], [27.8584, 86.8572], [27.8617, 86.8614]],
+    // traced down the southwest ridge on the terrain: tools/ridge.mjs ama-dablam 225 5600 4600
+    path: [[27.8363,86.8293],[27.8398,86.8341],[27.8405,86.8389],[27.8398,86.8436],[27.844,86.8476],[27.8483,86.8516],[27.8515,86.8513],[27.8553,86.8527],[27.8576,86.8553],[27.8591,86.8572],[27.8605,86.8588],[27.8617,86.8614]],
     region: T('Khumbu, Nepal', 'Khumbu, Nepal', 'Кхумбу, Непал'),
     route: T('Cresta sud-ovest', 'Southwest Ridge', 'Південно-західний гребінь'),
     tagline: T('Dove scopri se vuoi il resto.', 'Where you find out whether you want the rest.', 'Тут ти дізнаєшся, чи хочеш далі.'),
@@ -173,7 +174,8 @@ export const MOUNTAINS: Record<FileId, Mountain> = {
     name: T('K2', 'K2', 'K2'),
     height: 8611,
     summit: { lat: 35.8825, lon: 76.5133 },
-    path: [[35.8360, 76.5060], [35.8470, 76.5260], [35.8560, 76.5300], [35.8660, 76.5240], [35.8750, 76.5180], [35.8825, 76.5133]],
+    // traced down the southeast ridge (Abruzzi Spur) on the terrain: tools/ridge.mjs k2 135 5600 5000
+    path: [[35.8544,76.5357],[35.8593,76.5427],[35.864,76.5404],[35.8659,76.5381],[35.8678,76.5357],[35.8715,76.5357],[35.8734,76.5334],[35.8739,76.5288],[35.875,76.5244],[35.8748,76.5187],[35.8776,76.5175],[35.8795,76.5152],[35.8825,76.5133]],
     region: T('Karakorum, Pakistan', 'Karakoram, Pakistan', 'Каракорум, Пакистан'),
     route: T('Sperone Abruzzi', 'Abruzzi Spur', 'Ребро Абруццо'),
     tagline: T('La montagna che dice no.', 'The mountain that says no.', 'Гора, яка каже «ні».'),

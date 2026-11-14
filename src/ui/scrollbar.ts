@@ -33,7 +33,8 @@ export function mountScrollbar(): HTMLElement {
   const update = () => {
     const g = thumbGeometry(innerHeight, root.scrollHeight, scrollY, rail.clientHeight);
     size = g.size;
-    rail.hidden = g.size === 0;
+    // visibility, not hidden: a hidden rail has no height, and the thumb would never come back once the page grows
+    rail.style.visibility = g.size === 0 ? 'hidden' : '';
     thumb.style.height = `${g.size}px`;
     thumb.style.transform = `translateY(${g.offset.toFixed(1)}px)`;
   };

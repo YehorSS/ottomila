@@ -41,7 +41,7 @@ export function header(active?: FileId): string {
 export function footer(): string {
   const src = Object.entries(SOURCES).map(([, s]) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a></li>`).join('');
   return `<footer class="foot">
-    <div class="foot-call"><p class="mono" data-t="call.title"></p><a class="big-phone" href="${TEL}">${PHONE}</a><p data-t="call.lead"></p></div>
+    <div class="foot-call"><img class="night" src="${BASE}photos/night-1600.webp" alt="" width="1600" height="1074" loading="lazy"><p class="mono" data-t="call.title"></p><a class="big-phone" href="${TEL}">${PHONE}</a><p data-t="call.lead"></p></div>
     <div class="foot-cols">
       <div><h2 class="mono" data-t="foot.sources"></h2><ul class="src">${src}</ul><p class="mono small" data-t="foot.terrain"></p></div>
       <div><h2 class="mono" data-t="foot.credits"></h2><ul class="src" id="credits"></ul></div>

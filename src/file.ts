@@ -4,7 +4,7 @@ import { SOURCES } from './content/sources';
 import { num, t } from './i18n';
 import { oxygenShare } from './oxygen';
 import { mountTerrain } from './terrain/scene';
-import { boot, BASE, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
+import { boot, BASE, creditFor, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
 import { dossier, mountClearance } from './ui/dossier';
 
 const id = document.body.dataset.file as FileId;
@@ -48,6 +48,7 @@ function render(l: Lang) {
     </li>`).join('');
   const next = FILES[FILES.indexOf(id) + 1];
   document.getElementById('details')!.innerHTML = `
+    <figure class="photo"><img src="${BASE}photos/${id}-1600.webp" alt="${esc(creditFor(id)?.alt[l] ?? m.name[l])}" width="1600" height="1066" loading="lazy"><figcaption class="mono small">${esc(creditFor(id)?.alt[l] ?? '')}</figcaption></figure>
     <p class="first">${esc(t(l, 'file.first'))}: ${esc(m.firstAscent.text[l])}</p>
     ${list(t(l, 'file.who'), m.requirements.map(r => r[l]))}
     ${list(t(l, 'file.included'), m.included.map(r => r[l]))}

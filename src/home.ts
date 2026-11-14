@@ -2,7 +2,7 @@ import './styles/base.css';
 import { FILES, MOUNTAINS, type FileId, type Lang } from './content/mountains';
 import { euro, num, t } from './i18n';
 import { mountTerrain } from './terrain/scene';
-import { boot, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
+import { BASE, boot, creditFor, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
 import { dossier, mountClearance } from './ui/dossier';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,7 +36,7 @@ main.innerHTML = `
 </section>
 <section class="faq" id="faq" aria-labelledby="faq-title">
   <h2 class="sec-title" id="faq-title" data-t="faq.title"></h2>
-  ${[1, 2, 3, 4, 5].map(i => `<details><summary data-t="faq.q${i}"></summary><p data-t="faq.a${i}"></p></details>`).join('')}
+  <div class="faq-list">${[1, 2, 3, 4, 5].map(i => `<details><summary data-t="faq.q${i}"></summary><p data-t="faq.a${i}"></p></details>`).join('')}</div>
 </section>`;
 
 await boot();
@@ -75,7 +75,7 @@ function renderLadder(l: Lang) {
       <p class="mono lvl">${esc(t(l, 'file.level', { level })).toUpperCase()}${m.level === 4 ? ` · ${esc(t(l, 'file.invite')).toUpperCase()}` : ''}</p>
       <h3>${esc(m.name[l])}</h3>
       <p class="mono">${num(l, m.height)} m · ${esc(t(l, 'file.weeks', { n: m.weeks }))} · ${esc(t(l, 'file.from', { price: euro(l, m.priceFrom) }))}*</p>
-      <div class="peak" style="--h:${(m.height - 6000) / 2849}" aria-hidden="true"><i></i></div>
+      <img class="shot" src="${BASE}photos/${id}-800.webp" alt="${esc(creditFor(id)?.alt[l] ?? m.name[l])}" width="800" height="533" loading="lazy">
       <p>${esc(m.requirements[0][l])}</p>
       <a class="mono" href="${fileUrl(id)}">${esc(t(l, 'home.open', { no: m.no }))} →</a>
     </li>`;

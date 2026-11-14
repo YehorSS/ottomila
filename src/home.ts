@@ -1,0 +1,95 @@
+import './styles/base.css';
+import { FILES, MOUNTAINS, type FileId, type Lang } from './content/mountains';
+import { euro, num, t } from './i18n';
+import { mountTerrain } from './terrain/scene';
+import { boot, esc, fileUrl, getLang, onLang, rise } from './ui/shell';
+import { dossier, mountClearance } from './ui/dossier';
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const small = matchMedia('(max-width: 760px)').matches;
+const main = document.getElementById('main')!;
+
+main.innerHTML = `
+<section class="index" id="files" aria-labelledby="home-title">
+  <div class="stage"><canvas id="map" aria-hidden="true"></canvas><div class="overlay" id="overlay"></div></div>
+  <div class="legend mono"><span data-t="map.c500"></span><br><span class="thin" data-t="map.c50"></span><br>Copernicus DEM 30 m</div>
+  <aside class="panel">
+    <p class="kicker mono" data-t="home.kicker"></p>
+    <p class="home-title" id="home-title" data-t="home.title"></p>
+    <div class="tabs mono" role="tablist">${FILES.map(id => `<button type="button" role="tab" data-file="${id}">${MOUNTAINS[id].no} <span data-name="${id}"></span></button>`).join('')}</div>
+    <div class="file" id="card" role="tabpanel"></div>
+  </aside>
+</section>
+<section class="ladder" id="ladder" aria-labelledby="ladder-title">
+  <h2 class="sec-title" id="ladder-title" data-t="ladder.title"></h2>
+  <p class="sec-lead" data-t="ladder.lead"></p>
+  <ol class="rungs" id="rungs"></ol>
+</section>
+<section class="clearance" id="clearance" aria-labelledby="clear-title">
+  <h2 class="sec-title" id="clear-title" data-t="clear.title"></h2>
+  <p class="sec-lead" data-t="clear.lead"></p>
+  <div id="quiz"></div>
+</section>
+<section class="how" id="how" aria-labelledby="how-title">
+  <h2 class="sec-title" id="how-title" data-t="how.title"></h2>
+  <div class="how-grid">${[1, 2, 3, 4].map(i => `<div data-rise><p class="mono num">0${i}</p><h3 data-t="how.${i}t"></h3><p data-t="how.${i}d"></p></div>`).join('')}</div>
+</section>
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <h2 class="sec-title" id="faq-title" data-t="faq.title"></h2>
+  ${[1, 2, 3, 4, 5].map(i => `<details><summary data-t="faq.q${i}"></summary><p data-t="faq.a${i}"></p></details>`).join('')}
+</section>`;
+
+await boot();
+
+let current: FileId = (location.hash.slice(1) as FileId) in MOUNTAINS ? (location.hash.slice(1) as FileId) : 'everest';
+const view = mountTerrain(document.getElementById('map') as HTMLCanvasElement, document.getElementById('overlay')!, { reduced, small, shift: 0.19 });
+view.setOrbit(true);
+const stage = document.querySelector<HTMLElement>('.stage')!;
+
+const pinLabels = (id: FileId, l: Lang) => {
+  const m = MOUNTAINS[id];
+  return m.camps.map((c, i) => i === m.camps.length - 1 ? `<b>${esc(m.name[l])}</b>${num(l, c.height)} m` : `${esc(c.name[l])}<i>${num(l, c.height)} m</i>`);
+};
+
+async function select(id: FileId, animate = true) {
+  current = id;
+  const l = getLang();
+  document.querySelectorAll<HTMLButtonElement>('.tabs [data-file]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.file === id)));
+  document.getElementById('card')!.innerHTML = dossier(MOUNTAINS[id], l, { open: true });
+  if (animate && !reduced) stage.classList.add('fade');
+  await new Promise(r => setTimeout(r, animate && !reduced ? 350 : 0));
+  await view.show(MOUNTAINS[id], pinLabels(id, l));
+  view.setStop(0);
+  stage.classList.remove('fade');
+}
+
+document.querySelectorAll<HTMLButtonElement>('.tabs [data-file]').forEach(b => b.addEventListener('click', () => {
+  history.replaceState(null, '', `#${b.dataset.file}`);
+  void select(b.dataset.file as FileId);
+}));
+
+function renderLadder(l: Lang) {
+  document.getElementById('rungs')!.innerHTML = FILES.map(id => {
+    const m = MOUNTAINS[id], level = ['I', 'II', 'III', 'IV'][m.level - 1];
+    return `<li class="rung${m.level === 4 ? ' dark' : ''}" data-rise>
+      <p class="mono lvl">${esc(t(l, 'file.level', { level })).toUpperCase()}${m.level === 4 ? ` · ${esc(t(l, 'file.invite')).toUpperCase()}` : ''}</p>
+      <h3>${esc(m.name[l])}</h3>
+      <p class="mono">${num(l, m.height)} m · ${esc(t(l, 'file.weeks', { n: m.weeks }))} · ${esc(t(l, 'file.from', { price: euro(l, m.priceFrom) }))}*</p>
+      <div class="peak" style="--h:${(m.height - 6000) / 2849}" aria-hidden="true"><i></i></div>
+      <p>${esc(m.requirements[0][l])}</p>
+      <a class="mono" href="${fileUrl(id)}">${esc(t(l, 'home.open', { no: m.no }))} →</a>
+    </li>`;
+  }).join('');
+}
+
+const quiz = mountClearance(document.getElementById('quiz')!, getLang);
+onLang(l => {
+  renderLadder(l);
+  quiz(l);
+  document.getElementById('card')!.innerHTML = dossier(MOUNTAINS[current], l, { open: true });
+  view.setLabels(pinLabels(current, l));
+  rise();
+});
+renderLadder(getLang());
+rise();
+await select(current, false);
